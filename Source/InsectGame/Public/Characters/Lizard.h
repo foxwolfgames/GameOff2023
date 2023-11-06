@@ -8,6 +8,7 @@
 
 #include "Lizard.generated.h"
 
+class UBaseGameInstance;
 class UInputMappingContext;
 class UInputAction;
 class USpringArmComponent;
@@ -25,7 +26,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
-	virtual void BeginPlay() override;
+	UPROPERTY(VisibleAnywhere)
+	UBaseGameInstance* GameInstance;
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputMappingContext* MappingContext;
 	UPROPERTY(EditAnywhere, Category = Input)
@@ -33,11 +35,17 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* LookAction;
 	//Functions
+	virtual void BeginPlay() override;
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 
 private:
+	UPROPERTY(VisibleAnywhere)
 	APlayerController* PlayerControl;
+	UPROPERTY(EditAnywhere, Category = Tower)
+	TSubclassOf<AActor> Tower;
+	UPROPERTY(EditAnywhere, Category = Raytrace)
+	FVector RayHitLocation;
 	//Components
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent* SkeletalMeshComponent;
@@ -45,5 +53,8 @@ private:
 	USpringArmComponent* SpringArm;
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* ViewCamera;
-
+	//Functions
+	void RayTrace();
+	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Functions")
+	void PlaceTower();
 };

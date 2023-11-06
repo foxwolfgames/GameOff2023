@@ -1,11 +1,15 @@
-//Header File
+//Classes File
 #include "Characters/Lizard.h"
+#include "Deployables/TowerManager.h"
+#include "BaseGameInstance.h"
+//Other Header Files
+#include "DrawDebugHelpers.h"
+#include "Kismet/KismetSystemLibrary.h"
 //Enhanced Input
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 //Components
-//#include "Components/ArrowComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -14,6 +18,8 @@
 ALizard::ALizard()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetRootComponent());
@@ -58,14 +64,60 @@ void ALizard::Look(const FInputActionValue& Value)
 	}
 }
 
-// Called every frame
+void ALizard::RayTrace()
+{
+	if (!ViewCamera)
+		return;
+	const FVector CameraLocation = ViewCamera->GetComponentLocation();
+	const FRotator CameraRotation = ViewCamera->GetComponentRotation();
+	FVector TraceDirection = CameraRotation.Vector();
+
+	FCollisionQueryParams TraceParams;
+	TraceParams.AddIgnoredActor(this);
+
+	float TraceDistance = 1000.0f;
+
+	FVector TraceEnd = CameraLocation + (TraceDirection * TraceDistance);
+
+	// Perform the ray trace
+	FHitResult HitResult;
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, CameraLocation, TraceEnd, ECC_Visibility, TraceParams);
+
+	// Debug visualization in the editor
+	if (GEngine)
+	{
+		
+		// Draw a debug line in the editor to visualize the ray (regardless of hit)
+		FColor DebugColor = bHit ? FColor::Green : FColor::Red;
+		DrawDebugLine(GetWorld(), CameraLocation, TraceEnd, DebugColor, false, -1, 0, 1.0f);
+	}
+
+	if (bHit)
+	{
+		// The ray hit something
+		//AActor* HitActor = HitResult.GetActor();
+
+		//Note: initialize RayHitLocation when beginning raytrace, currently 0,0,0
+		RayHitLocation = HitResult.ImpactPoint;
+
+		// Do something with the hit result (e.g., spawn a tower or apply logic)
+	}
+}
+
+void ALizard::PlaceTower()
+{
+}
+
 void ALizard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if (GEngine)
+	{
+		GEngine->ClearOnScreenDebugMessages();
+	}
+	RayTrace();
 }
 
-// Called to bind functionality to input
 void ALizard::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
