@@ -2,7 +2,7 @@
 #include "Characters/Lizard.h"
 #include "BaseGameInstance.h"
 #include "Deployables/TowerManager.h"
-#include "Deployables/Tower.h"
+//#include "Deployables/Tower.h"
 //Other Header Files
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -116,14 +116,16 @@ void ALizard::RayTrace()
 	FHitResult HitResult;
 	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, CameraLocation, TraceEnd, ECC_GameTraceChannel1, TraceParams);
 
-	ATower* HitTower = Cast<ATower>(HitResult.GetActor());
+	AActor* HitActor = HitResult.GetActor();
 	if (GEngine)
 	{
-		FColor DebugColor = bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > 100.f) && !HitTower ? FColor::Green : FColor::Red;
+		
+		// Draw a debug line in the editor to visualize the ray (regardless of hit)
+		FColor DebugColor = bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > 100.f) && HitActor->ActorHasTag("Placable") ? FColor::Green : FColor::Red;
 		DrawDebugLine(GetWorld(), CameraLocation, TraceEnd, DebugColor, false, -1, 0, 1.0f);
 	}
 
-	if (bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > 100.f) && !HitTower)
+	if (bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > 100.f) && HitActor->ActorHasTag("Placable"))
 	{
 		// The ray hit something
 
