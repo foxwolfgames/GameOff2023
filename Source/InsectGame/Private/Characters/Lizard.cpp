@@ -1,7 +1,6 @@
 //Classes File
 #include "Characters/Lizard.h"
 #include "Deployables/TowerManager.h"
-#include "BaseGameInstance.h"
 //Other Header Files
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -18,8 +17,6 @@
 ALizard::ALizard()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-	GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetRootComponent());
@@ -62,6 +59,31 @@ void ALizard::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookingVector.X);
 		AddControllerPitchInput(-LookingVector.Y);
 	}
+}
+
+void ALizard::Jump()
+{
+	Super::Jump();
+
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Jump"));
+}
+void ALizard::EKey()
+{
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("EKey"));
+}
+
+void ALizard::LMB()
+{
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("LMB"));
+}
+
+void ALizard::ESC()
+{
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("ESC"));
 }
 
 void ALizard::RayTrace()
@@ -111,10 +133,6 @@ void ALizard::PlaceTower()
 void ALizard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (GEngine)
-	{
-		GEngine->ClearOnScreenDebugMessages();
-	}
 	RayTrace();
 }
 
@@ -125,6 +143,11 @@ void ALizard::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ALizard::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ALizard::Look);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ALizard::Jump);
+		EnhancedInputComponent->BindAction(EKeyAction, ETriggerEvent::Started, this, &ALizard::EKey);
+		EnhancedInputComponent->BindAction(LMBAction, ETriggerEvent::Started, this, &ALizard::LMB);
+		EnhancedInputComponent->BindAction(ESCAction, ETriggerEvent::Started, this, &ALizard::ESC);
 	}
 }
+
 

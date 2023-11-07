@@ -5,14 +5,13 @@
 #include "Deployables/Tower.h"
 #include "Deployables/TowerFactory.h"
 
-ATowerManager::ATowerManager()
+UTowerManager::UTowerManager()
 {
-    PrimaryActorTick.bCanEverTick = false;
 
     TowerFactory = CreateDefaultSubobject<ATowerFactory>(TEXT("TowerFactory"));
 }
 
-void ATowerManager::DeployTower(TSubclassOf<ATower> TowerClass, FVector Location, FRotator Rotation)
+void UTowerManager::DeployTower(TSubclassOf<ATower> TowerClass, FVector Location, FRotator Rotation)
 {
     if (TowerFactory)
     {
@@ -26,10 +25,4 @@ void ATowerManager::DeployTower(TSubclassOf<ATower> TowerClass, FVector Location
     }
 }
 
-// Called when the game starts or when spawned
-void ATowerManager::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
 

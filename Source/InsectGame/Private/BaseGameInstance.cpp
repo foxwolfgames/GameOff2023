@@ -2,10 +2,13 @@
 
 
 #include "BaseGameInstance.h"
-#include "Deployables/TowerManager.h"
-//#include "Kismet/GameplayStatics.h"
 
 UBaseGameInstance::UBaseGameInstance()
 {
-	TowerManager = NewObject<ATowerManager>();
+	TowerManager = CreateDefaultSubobject<UTowerManager>(TEXT("TowerManagerInstance"));
+}
+
+UTowerManager* UBaseGameInstance::GetTowerManager() const
+{
+	return TowerManager;
 }

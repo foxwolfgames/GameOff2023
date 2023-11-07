@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "Deployables/TowerManager.h"
+//#include "Kismet/GameplayStatics.h"
+
 #include "BaseGameInstance.generated.h"
-
-
-class ATowerManager;
 
 UCLASS()
 class INSECTGAME_API UBaseGameInstance : public UGameInstance
@@ -17,6 +17,10 @@ class INSECTGAME_API UBaseGameInstance : public UGameInstance
 public:
 	UBaseGameInstance();
 
+	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Functions")
+	UTowerManager* GetTowerManager() const;
+
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	ATowerManager* TowerManager;
+	UTowerManager* TowerManager;
 };

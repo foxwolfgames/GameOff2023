@@ -8,7 +8,6 @@
 
 #include "Lizard.generated.h"
 
-class UBaseGameInstance;
 class UInputMappingContext;
 class UInputAction;
 class USpringArmComponent;
@@ -24,20 +23,30 @@ public:
 	ALizard();
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void Jump() override;
 
 protected:
-	UPROPERTY(VisibleAnywhere)
-	UBaseGameInstance* GameInstance;
+	virtual void BeginPlay() override;
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputMappingContext* MappingContext;
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* MoveAction;
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* LookAction;
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* JumpAction;
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* EKeyAction;
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* LMBAction;
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* ESCAction;
 	//Functions
-	virtual void BeginPlay() override;
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+	void EKey();
+	void LMB();
+	void ESC();
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -54,6 +63,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* ViewCamera;
 	//Functions
+	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Functions")
 	void RayTrace();
 	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Functions")
 	void PlaceTower();
