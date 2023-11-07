@@ -1,6 +1,8 @@
 //Classes File
 #include "Characters/Lizard.h"
+#include "BaseGameInstance.h"
 #include "Deployables/TowerManager.h"
+#include "Deployables/Tower.h"
 //Other Header Files
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -30,6 +32,13 @@ ALizard::ALizard()
 void ALizard::BeginPlay()
 {
 	Super::BeginPlay();
+	GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+	if (GameInstance)
+	{
+		TowerManager = GameInstance->GetTowerManager();
+		if(TowerManager)
+			UE_LOG(LogTemp, Warning, TEXT("Got TowerManager"));
+	}
 	PlayerControl = Cast<APlayerController>(GetController());
 	if (PlayerControl)
 	{
@@ -72,12 +81,15 @@ void ALizard::EKey()
 {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("EKey"));
+	E_Toggle  = !E_Toggle;
+	PreviewTower(PreviewTowerIndex);
 }
 
 void ALizard::LMB()
 {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("LMB"));
+	PlaceTower();
 }
 
 void ALizard::ESC()
@@ -96,38 +108,69 @@ void ALizard::RayTrace()
 
 	FCollisionQueryParams TraceParams;
 	TraceParams.AddIgnoredActor(this);
+	TraceParams.TraceTag = FName("FloorTrace");
 
-	float TraceDistance = 1000.0f;
-
+	float TraceDistance = 600.0f;
 	FVector TraceEnd = CameraLocation + (TraceDirection * TraceDistance);
 
-	// Perform the ray trace
 	FHitResult HitResult;
-	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, CameraLocation, TraceEnd, ECC_Visibility, TraceParams);
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, CameraLocation, TraceEnd, ECC_GameTraceChannel1, TraceParams);
 
-	// Debug visualization in the editor
+	ATower* HitTower = Cast<ATower>(HitResult.GetActor());
 	if (GEngine)
 	{
-		
-		// Draw a debug line in the editor to visualize the ray (regardless of hit)
-		FColor DebugColor = bHit ? FColor::Green : FColor::Red;
+		FColor DebugColor = bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > 100.f) && !HitTower ? FColor::Green : FColor::Red;
 		DrawDebugLine(GetWorld(), CameraLocation, TraceEnd, DebugColor, false, -1, 0, 1.0f);
 	}
 
-	if (bHit)
+	if (bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > 100.f) && !HitTower)
 	{
 		// The ray hit something
-		//AActor* HitActor = HitResult.GetActor();
 
 		//Note: initialize RayHitLocation when beginning raytrace, currently 0,0,0
 		RayHitLocation = HitResult.ImpactPoint;
+		RayHitRotation = FRotator::ZeroRotator;
+		if (E_Toggle)
+		{
+			if (TowerManager)
+			{
+				TowerManager->GetTowerByIndex(PreviewTowerIndex)->SetVisibility(true);
+				TowerManager->GetTowerByIndex(PreviewTowerIndex)->UpdatePosition(RayHitLocation, RayHitRotation);
+				bCanPlace = true;
+			}
+		}
 
-		// Do something with the hit result (e.g., spawn a tower or apply logic)
+	}
+	else
+	{
+		bCanPlace = false;
+		if (E_Toggle)
+		{
+			if (TowerManager)
+			{
+				TowerManager->GetTowerByIndex(PreviewTowerIndex)->SetVisibility(false);
+			}
+		}
+	}
+}
+
+void ALizard::PreviewTower(int32 index)
+{
+	if (TowerManager)
+	{
+		E_Toggle ? TowerManager->GetTowerByIndex(index)->SetVisibility(true) : TowerManager->GetTowerByIndex(index)->SetVisibility(false);
 	}
 }
 
 void ALizard::PlaceTower()
 {
+	if (bCanPlace && E_Toggle && TowerManager)
+	{
+		if (TowerManager)
+		{
+			TowerManager->DeployTower(0, RayHitLocation, RayHitRotation);
+		}
+	}
 }
 
 void ALizard::Tick(float DeltaTime)

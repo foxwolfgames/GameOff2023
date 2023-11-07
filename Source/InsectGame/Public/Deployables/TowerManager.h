@@ -3,27 +3,39 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
+#include "GameFramework/Actor.h"
+
+#include "Deployables/Tower.h"
+
 #include "TowerManager.generated.h"
 
-class ATower;
 class ATowerFactory;
 
 UCLASS()
-class INSECTGAME_API UTowerManager : public UObject
+class INSECTGAME_API ATowerManager : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	UTowerManager();
+	ATowerManager();
 	//virtual void Tick(float DeltaTime) override;
-	TArray<ATower*> TowersList;
-	void DeployTower(TSubclassOf<ATower> TowerClass, FVector Location, FRotator Rotation);
+	UPROPERTY(EditAnywhere, Category = "Towers")
+	TArray<TSubclassOf<ATower>> TowerTypes;
+	//Functions
+	ATower* GetTowerByIndex(int32 index);
+	void DeployTower(int32 index, FVector Location, FRotator Rotation);
 
 protected:
+	virtual void BeginPlay() override;
 
 private:
+	bool hidden;
+	int32 PreviewSize;
+	//Cache
+	UPROPERTY()
+	TArray<ATower*> PreviewTowers;
 	UPROPERTY()
 	ATowerFactory* TowerFactory;
-
+	UPROPERTY()
+	TArray<ATower*> TowersList;
 };

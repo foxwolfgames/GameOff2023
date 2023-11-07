@@ -19,7 +19,6 @@ public:
 	ATower* CreateTower(TSubclassOf<ATower> TowerClass, FVector Location, FRotator Rotation);
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:	

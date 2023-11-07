@@ -8,6 +8,9 @@
 
 #include "Lizard.generated.h"
 
+class UBaseGameInstance;
+class ATowerManager;
+//class ATower;
 class UInputMappingContext;
 class UInputAction;
 class USpringArmComponent;
@@ -49,12 +52,23 @@ protected:
 	void ESC();
 
 private:
+	//Values
+	bool E_Toggle = false;
+	bool bCanPlace = false;
+	int32 PreviewTowerIndex = 0;
+	//Cache
+	UPROPERTY(VisibleAnywhere)
+	UBaseGameInstance* GameInstance;
+	UPROPERTY(VisibleAnywhere)
+	ATowerManager* TowerManager;
 	UPROPERTY(VisibleAnywhere)
 	APlayerController* PlayerControl;
 	UPROPERTY(EditAnywhere, Category = Tower)
 	TSubclassOf<AActor> Tower;
 	UPROPERTY(EditAnywhere, Category = Raytrace)
 	FVector RayHitLocation;
+	UPROPERTY(EditAnywhere, Category = Raytrace)
+	FRotator RayHitRotation;
 	//Components
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent* SkeletalMeshComponent;
@@ -62,9 +76,13 @@ private:
 	USpringArmComponent* SpringArm;
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* ViewCamera;
+	//UPROPERTY(VisibleAnywhere)
+	//ATower* PreviewTowerActor = nullptr;
 	//Functions
 	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Functions")
 	void RayTrace();
+	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Functions")
+	void PreviewTower(int32 index);
 	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Functions")
 	void PlaceTower();
 };

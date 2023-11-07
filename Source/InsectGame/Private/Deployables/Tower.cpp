@@ -2,11 +2,19 @@
 
 
 #include "Deployables/Tower.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 
 // Sets default values
 ATower::ATower()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
+	RootComponent = SkeletalMeshComponent;
+
+	CollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollisionCapsule"));
+	CollisionCapsule->SetupAttachment(GetRootComponent());
 
 	AttackRange = 1000.f;
 	AttackDamage = 10.f;
@@ -19,6 +27,24 @@ void ATower::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void ATower::UpdatePosition(FVector Location, FRotator Rotation)
+{
+	SetActorLocation(Location);
+	SetActorRotation(Rotation);
+}
+
+void ATower::SetVisibility(bool b)
+{
+	SetActorHiddenInGame(!b);
+}
+
+void ATower::ToggleTower(bool b)
+{
+	SetActorHiddenInGame(!b);
+	SetActorEnableCollision(b);
+	SetActorTickEnabled(b);
 }
 
 void ATower::FireAtTarget(AActor* Target)

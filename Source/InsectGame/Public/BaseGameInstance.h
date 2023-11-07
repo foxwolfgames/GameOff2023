@@ -18,9 +18,11 @@ public:
 	UBaseGameInstance();
 
 	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Functions")
-	UTowerManager* GetTowerManager() const;
+	void SetTowerManager(ATowerManager* TM);
+	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Functions")
+	ATowerManager* GetTowerManager() const;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UTowerManager* TowerManager;
+	ATowerManager* TowerManager;
 };

@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Tower.generated.h"
 
+class UCapsuleComponent;
+
 UCLASS()
 class INSECTGAME_API ATower : public AActor
 {
@@ -22,13 +24,20 @@ public:
     float AttackSpeed;
     UPROPERTY(EditAnywhere, Category = "Tower")
     float HitPoints;
-    //Functions
-    void FireAtTarget(AActor* Target);
+    //Functions - virtual
+    virtual void ToggleTower(bool b);
+    virtual void FireAtTarget(AActor* Target);
 	virtual void Tick(float DeltaTime) override;
+    //Functions
+    void UpdatePosition(FVector Location, FRotator Rotation);
+    void SetVisibility(bool b);
 
 protected:
 	virtual void BeginPlay() override;
 
-private:	
-
+private:
+    UPROPERTY(VisibleAnywhere)
+    UCapsuleComponent* CollisionCapsule;
+	UPROPERTY(VisibleAnywhere)
+    USkeletalMeshComponent* SkeletalMeshComponent;
 };
