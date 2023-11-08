@@ -29,13 +29,13 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	bool hidden;
+	//bool hidden;
 	int32 PreviewSize;
 	//Cache
 	UPROPERTY()
-	TArray<ATower*> PreviewTowers;
-	UPROPERTY()
 	ATowerFactory* TowerFactory;
+	UPROPERTY()
+	TArray<ATower*> PreviewTowers;
 	UPROPERTY()
 	TArray<ATower*> TowersList;
 };

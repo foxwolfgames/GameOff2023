@@ -14,8 +14,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+//#include "Components/SkeletalMeshComponent.h"
+//#include "Components/CapsuleComponent.h"
 
-// Sets default values
 ALizard::ALizard()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -26,9 +27,9 @@ ALizard::ALizard()
 
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("CharacterCamera"));
 	ViewCamera->SetupAttachment(SpringArm);
+
 }
 
-// Called when the game starts or when spawned
 void ALizard::BeginPlay()
 {
 	Super::BeginPlay();
@@ -119,16 +120,12 @@ void ALizard::RayTrace()
 	AActor* HitActor = HitResult.GetActor();
 	if (GEngine)
 	{
-		
-		// Draw a debug line in the editor to visualize the ray (regardless of hit)
 		FColor DebugColor = bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > 100.f) && HitActor->ActorHasTag("Placable") ? FColor::Green : FColor::Red;
 		DrawDebugLine(GetWorld(), CameraLocation, TraceEnd, DebugColor, false, -1, 0, 1.0f);
 	}
 
 	if (bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > 100.f) && HitActor->ActorHasTag("Placable"))
 	{
-		// The ray hit something
-
 		//Note: initialize RayHitLocation when beginning raytrace, currently 0,0,0
 		RayHitLocation = HitResult.ImpactPoint;
 		RayHitRotation = FRotator::ZeroRotator;
@@ -141,7 +138,6 @@ void ALizard::RayTrace()
 				bCanPlace = true;
 			}
 		}
-
 	}
 	else
 	{
