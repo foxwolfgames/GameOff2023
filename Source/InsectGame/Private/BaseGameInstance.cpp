@@ -17,4 +17,12 @@ ATowerManager* UBaseGameInstance::GetTowerManager() const
 {
 	return TowerManager;
 }
+void UBaseGameInstance::SetNavigationManager(ANavigationManager* NM)
+{
+	NavigationManager = NM;
+}
+ANavigationManager* UBaseGameInstance::GetNavigationManager() const
+{
+	return NavigationManager;
+}
 /**/

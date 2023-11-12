@@ -2,6 +2,8 @@
 
 
 #include "Enemies/BaseEnemy.h"
+#include "BaseGameInstance.h"
+#include "Enemies/NavigationManager.h"
 //Components
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -31,6 +33,12 @@ ABaseEnemy::ABaseEnemy()
 void ABaseEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	if (UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance()))
+	{
+		NavigationManager = GameInstance->GetNavigationManager();
+	}
+	if(NavigationManager)
+		UE_LOG(LogTemp, Warning, TEXT("Navigation Manager Set"));
 	AIController = Cast<AAIController>(GetController());
 	AIController->MoveToLocation(FVector(0.f, 0.f, 110.f), 20.f, true, true, true);
 }
