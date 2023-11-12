@@ -22,6 +22,7 @@ ABaseEnemy::ABaseEnemy()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseRVOAvoidance = true;
+	GetCharacterMovement()->MaxWalkSpeed = 150.f;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
@@ -33,14 +34,17 @@ ABaseEnemy::ABaseEnemy()
 void ABaseEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	AIController = Cast<AAIController>(GetController());
 	if (UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance()))
 	{
 		NavigationManager = GameInstance->GetNavigationManager();
 	}
-	if(NavigationManager)
+	if (NavigationManager)
+	{
 		UE_LOG(LogTemp, Warning, TEXT("Navigation Manager Set"));
-	AIController = Cast<AAIController>(GetController());
-	AIController->MoveToLocation(FVector(0.f, 0.f, 110.f), 20.f, true, true, true);
+		AIController->MoveToActor(NavigationManager->TargetPointArr1[0]);
+	}
+	//AIController->MoveToLocation(FVector(0.f, 0.f, 110.f), 20.f, true, true, true);
 }
 
 // Called every frame

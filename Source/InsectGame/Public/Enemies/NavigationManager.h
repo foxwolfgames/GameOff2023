@@ -14,10 +14,11 @@ class INSECTGAME_API ANavigationManager : public AActor
 public:	
 	ANavigationManager();
 	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(EditAnywhere, Category = "Navigation")
+	TArray<AActor*> TargetPointArr1;
 
 protected:
 	virtual void BeginPlay() override;
 
-public:	
-
+private:	
 };
