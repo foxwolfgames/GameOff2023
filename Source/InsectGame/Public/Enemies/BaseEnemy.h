@@ -27,4 +27,10 @@ private:
 	AAIController* AIController;
 	UPROPERTY(VisibleAnywhere)
 	ANavigationManager* NavigationManager;
+	float PatrolRadius = 200.f;
+	UPROPERTY()
+	AActor* CurrentTarget;
+	//Functions
+	UFUNCTION()
+	bool InTargetRange(AActor* Target, double Radius);
 };

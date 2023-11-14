@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-
 #include "Deployables/Tower.h"
 
 #include "TowerManager.generated.h"

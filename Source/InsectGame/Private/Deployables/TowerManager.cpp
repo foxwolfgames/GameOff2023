@@ -7,31 +7,9 @@
 
 ATowerManager::ATowerManager()
 {
+    PrimaryActorTick.bCanEverTick = false;
     UE_LOG(LogTemp, Warning, TEXT("Init TowerManager"));
     TowerFactory = CreateDefaultSubobject<ATowerFactory>(TEXT("TowerFactory"));
-}
-
-ATower* ATowerManager::GetTowerByIndex(int32 index)
-{
-    if(index >= 0 && index < PreviewSize)
-        return PreviewTowers[index];
-    return nullptr;
-}
-
-void ATowerManager::DeployTower(int32 index, FVector Location, FRotator Rotation)
-{
-    if (!(index >= 0 && index < PreviewSize))
-        return;
-    if (TowerFactory)
-    {
-        // Create a new tower using the TowerFactory
-        ATower* NewTower = TowerFactory->CreateTower(TowerTypes[index], Location, Rotation);
-
-        if (NewTower)
-        {
-            TowersList.Add(NewTower);
-        }
-    }
 }
 
 void ATowerManager::BeginPlay()
@@ -62,5 +40,28 @@ void ATowerManager::BeginPlay()
             }
         }
         PreviewSize = PreviewTowers.Num();
+    }
+}
+
+ATower* ATowerManager::GetTowerByIndex(int32 index)
+{
+    if(index >= 0 && index < PreviewSize)
+        return PreviewTowers[index];
+    return nullptr;
+}
+
+void ATowerManager::DeployTower(int32 index, FVector Location, FRotator Rotation)
+{
+    if (!(index >= 0 && index < PreviewSize))
+        return;
+    if (TowerFactory)
+    {
+        // Create a new tower using the TowerFactory
+        ATower* NewTower = TowerFactory->CreateTower(TowerTypes[index], Location, Rotation);
+
+        if (NewTower)
+        {
+            TowersList.Add(NewTower);
+        }
     }
 }

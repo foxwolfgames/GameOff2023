@@ -16,6 +16,12 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	UPROPERTY(EditAnywhere, Category = "Navigation")
 	TArray<AActor*> TargetPointArr1;
+	UPROPERTY(EditAnywhere, Category = "Navigation")
+	TArray<AActor*> TargetPointArr2;
+	UPROPERTY(EditAnywhere, Category = "Navigation")
+	TArray<AActor*> TargetPointArr3;
+	UPROPERTY(EditAnywhere, Category = "Navigation")
+	TArray<AActor*> TargetPointArr4;
 
 protected:
 	virtual void BeginPlay() override;

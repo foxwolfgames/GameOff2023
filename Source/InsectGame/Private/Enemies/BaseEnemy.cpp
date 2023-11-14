@@ -42,16 +42,29 @@ void ABaseEnemy::BeginPlay()
 	if (NavigationManager)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Navigation Manager Set"));
-		AIController->MoveToActor(NavigationManager->TargetPointArr1[0]);
+		CurrentTarget =NavigationManager->TargetPointArr1[0];
 	}
 	//AIController->MoveToLocation(FVector(0.f, 0.f, 110.f), 20.f, true, true, true);
+}
+
+bool ABaseEnemy::InTargetRange(AActor* Target, double Radius)
+{
+	const double DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
+	return DistanceToTarget <= Radius;
 }
 
 // Called every frame
 void ABaseEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if (CurrentTarget && AIController)
+	{
+		if (!InTargetRange(CurrentTarget, 200.f))
+		{
+			AIController->MoveToActor(CurrentTarget);
+		}
+	}
+	
 }
 
 // Called to bind functionality to input

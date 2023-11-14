@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "Deployables/TowerManager.h"
+#include "Enemies/EnemyManager.h"
 #include "Enemies/NavigationManager.h"
 //#include "Kismet/GameplayStatics.h"
 
@@ -17,11 +18,16 @@ class INSECTGAME_API UBaseGameInstance : public UGameInstance
 
 public:
 	UBaseGameInstance();
-
+	//Tower
 	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Functions")
 	void SetTowerManager(ATowerManager* TM);
 	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Functions")
 	ATowerManager* GetTowerManager() const;
+	//Enemy
+	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Functions")
+	void SetEnemyManager(AEnemyManager* EM);
+	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Functions")
+	AEnemyManager* GetEnemyManager() const;
 	//Navigation
 	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Functions")
 	void SetNavigationManager(ANavigationManager* TM);
@@ -31,6 +37,8 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	ATowerManager* TowerManager;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	AEnemyManager* EnemyManager;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	ANavigationManager* NavigationManager;
 };
