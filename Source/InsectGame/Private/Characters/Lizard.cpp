@@ -1,6 +1,7 @@
 //Classes File
 #include "Characters/Lizard.h"
 #include "BaseGameInstance.h"
+#include "GameManager.h"
 #include "Deployables/TowerManager.h"
 //#include "Deployables/Tower.h"
 //Other Header Files
@@ -84,6 +85,19 @@ void ALizard::EKey()
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("EKey"));
 	E_Toggle  = !E_Toggle;
 	PreviewTower(PreviewTowerIndex);
+}
+
+void ALizard::RKey()
+{
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, TEXT("RKey"));
+	if (GameInstance)
+	{
+		if (GameInstance->GetGameManager())
+		{
+			GameInstance->GetGameManager()->StartAttackPhase();
+		}
+	}
 }
 
 void ALizard::LMB()
@@ -186,6 +200,7 @@ void ALizard::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ALizard::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ALizard::Jump);
 		EnhancedInputComponent->BindAction(EKeyAction, ETriggerEvent::Started, this, &ALizard::EKey);
+		EnhancedInputComponent->BindAction(RKeyAction, ETriggerEvent::Started, this, &ALizard::RKey);
 		EnhancedInputComponent->BindAction(LMBAction, ETriggerEvent::Started, this, &ALizard::LMB);
 		EnhancedInputComponent->BindAction(ESCAction, ETriggerEvent::Started, this, &ALizard::ESC);
 	}

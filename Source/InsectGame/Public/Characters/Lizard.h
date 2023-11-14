@@ -41,6 +41,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* EKeyAction;
 	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* RKeyAction;
+	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* LMBAction;
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* ESCAction;
@@ -48,6 +50,7 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void EKey();
+	void RKey();
 	void LMB();
 	void ESC();
 
