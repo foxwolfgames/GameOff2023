@@ -19,12 +19,26 @@ public:
 	void StartPrepPhase();
 	UFUNCTION()
 	void StartAttackPhase();
-	UFUNCTION()
-	void SpawnWave();
 
 protected:
 	virtual void BeginPlay() override;
 
 private:	
-
+	UPROPERTY(EditAnywhere, Category = "Enemies")
+	TArray<int32> EnemiesCount;
+	UPROPERTY()
+	int32 CurrentWave;
+	UPROPERTY()
+	FTimerHandle TimerHandle;
+	UPROPERTY()
+	int32 TimeCount;
+	//Functions
+	UFUNCTION()
+	void SpawnWave();
+	UFUNCTION()
+	void CountDown(int32 start);
+	UFUNCTION()
+	void DisplayCount();
+	UFUNCTION()
+	void CountDownTick();
 };
