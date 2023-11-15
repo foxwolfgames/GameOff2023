@@ -38,12 +38,12 @@ void ABaseEnemy::BeginPlay()
 	if (UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance()))
 	{
 		NavigationManager = GameInstance->GetNavigationManager();
-	}
+	}/*
 	if (NavigationManager)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Navigation Manager Set"));
-		CurrentTarget =NavigationManager->TargetPointArr1[0];
-	}
+		CurrentTarget = NavigationManager->TargetPointArr1[0];
+	}*/
 	//AIController->MoveToLocation(FVector(0.f, 0.f, 110.f), 20.f, true, true, true);
 }
 

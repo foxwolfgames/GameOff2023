@@ -22,26 +22,23 @@ void AEnemyManager::BeginPlay()
     if (UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance()))
     {
         GameInstance->SetEnemyManager(this);
+        if(GameInstance->GetEnemyManager())
+        UE_LOG(LogTemp, Warning, TEXT("BeginPlay Set EnemyManager"));
     }
-    UE_LOG(LogTemp, Warning, TEXT("BeginPlay EnemyManager"));
     if (EnemyFactory)
     {
         EnemyTypeSize = EnemyTypes.Num();
     }
 }
 
-//ABaseEnemy* AEnemyManager::GetEnemyByIndex(int32 index)
-//{
-//	return nullptr;
-//}
+//ABaseEnemy* AEnemyManager::GetEnemyByIndex(int32 index){}
 
-void AEnemyManager::DeployEnemy(int32 index, TArray<AActor*> TPList, FRotator Rotation)
+void AEnemyManager::DeployEnemy(int32 index, const TArray<AActor*>& TPList, FRotator Rotation)
 {
     if (!(index >= 0 && index < EnemyTypeSize))
         return;
     if (EnemyFactory)
     {
-        // Create a new tower using the TowerFactory
         ABaseEnemy* NewEnemy = EnemyFactory->CreateEnemy(EnemyTypes[index], TPList, Rotation);
 
         if (NewEnemy)

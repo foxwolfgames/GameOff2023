@@ -22,7 +22,8 @@ public:
 
 	//Functions
 	//ABaseEnemy* GetEnemyByIndex(int32 index);
-	void DeployEnemy(int32 index, TArray<AActor*> TPList, FRotator Rotation);
+	UFUNCTION()
+	void DeployEnemy(int32 index, const TArray<AActor*>& TPList, FRotator Rotation);
 
 protected:
 	virtual void BeginPlay() override;

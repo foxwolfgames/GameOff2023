@@ -4,9 +4,23 @@
 #include "Enemies/EnemyFactory.h"
 #include "Enemies/BaseEnemy.h"
 
-ABaseEnemy* AEnemyFactory::CreateEnemy(TSubclassOf<ABaseEnemy> TowerClass, TArray<AActor*> TPList, FRotator Rotation)
+ABaseEnemy* AEnemyFactory::CreateEnemy(TSubclassOf<ABaseEnemy> EnemyClass, const TArray<AActor*>& TPList, FRotator Rotation)
 {
-	return nullptr;
+    UWorld* World = GetWorld();
+    if (GEngine)
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, TEXT("In CreateEnemy"));
+    if (World && TPList.Num() > 0 && TPList[0])
+    {
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, FString::Printf(TEXT("Creating Enemy: %s"), *EnemyClass->GetName()));
+        }
+        FActorSpawnParameters SpawnParams;
+        SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+        ABaseEnemy* NewEnemy = World->SpawnActor<ABaseEnemy>(EnemyClass, TPList[0]->GetActorLocation(), Rotation, SpawnParams);
+        return NewEnemy;
+    }
+    return nullptr;
 }
 
 void AEnemyFactory::BeginPlay()
