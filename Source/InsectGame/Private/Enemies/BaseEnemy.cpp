@@ -25,7 +25,7 @@ ABaseEnemy::ABaseEnemy()
 	GetCharacterMovement()->MaxWalkSpeed = 150.f;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
-	bUseControllerRotationYaw = false;
+	bUseControllerRotationYaw = false;/**/
 
 	//GetMesh()->SetGenerateOverlapEvents(true);
 }
@@ -63,14 +63,7 @@ void ABaseEnemy::Tick(float DeltaTime)
 		{
 			AIController->MoveToActor(CurrentTarget);
 		}
-	}
+	}/**/
 	
-}
-
-// Called to bind functionality to input
-void ABaseEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 

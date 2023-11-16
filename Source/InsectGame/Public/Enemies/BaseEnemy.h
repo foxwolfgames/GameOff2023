@@ -17,7 +17,7 @@ class INSECTGAME_API ABaseEnemy : public ACharacter
 public:
 	ABaseEnemy();
 	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	//virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -29,7 +29,7 @@ private:
 	ANavigationManager* NavigationManager;
 	float PatrolRadius = 200.f;
 	UPROPERTY()
-	AActor* CurrentTarget;
+	AActor* CurrentTarget;/**/
 	//Functions
 	UFUNCTION()
 	bool InTargetRange(AActor* Target, double Radius);

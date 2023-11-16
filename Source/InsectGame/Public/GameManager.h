@@ -67,12 +67,12 @@ protected:
 
 private:
 	//For some reason, EditAnywhere is necessary for EnemyManager or else it doesn't get set...
-	UPROPERTY(EditAnywhere, Category = "Enemies")
-	AEnemyManager* EnemyManager;
-	UPROPERTY(EditAnywhere, Category = "Enemies")
+	UPROPERTY(EditAnywhere)
 	ANavigationManager* NavigationManager;
-	UPROPERTY(EditAnywhere, Category = "Enemies")
-	TArray<int32> EnemiesCount;
+	UPROPERTY(EditAnywhere)
+	AEnemyManager* EnemyManager;
+	//UPROPERTY(EditAnywhere, Category = "Enemies")
+	//TArray<int32> EnemiesCount;
 	UPROPERTY()
 	int32 CurrentWave;
 	UPROPERTY()

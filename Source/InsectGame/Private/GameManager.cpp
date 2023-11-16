@@ -45,8 +45,6 @@ void AGameManager::StartPrepPhase()
 
 void AGameManager::StartAttackPhase()
 {
-	if (EnemiesCount.Num() < 1)
-		return;
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, TEXT("Starting Attack Phase"));
 	CountDown(3);

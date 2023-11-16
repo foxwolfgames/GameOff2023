@@ -3,6 +3,8 @@
 
 #include "Enemies/EnemyFactory.h"
 #include "Enemies/BaseEnemy.h"
+#include "Deployables/Tower.h"
+#include "UObject/UObjectGlobals.h"
 
 ABaseEnemy* AEnemyFactory::CreateEnemy(TSubclassOf<ABaseEnemy> EnemyClass, const TArray<AActor*>& TPList, FRotator Rotation)
 {
@@ -15,9 +17,13 @@ ABaseEnemy* AEnemyFactory::CreateEnemy(TSubclassOf<ABaseEnemy> EnemyClass, const
         {
             GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, FString::Printf(TEXT("Creating Enemy: %s"), *EnemyClass->GetName()));
         }
+        //UClass* MyBlueprintClass = LoadClass<ABaseEnemy>(nullptr, TEXT("Blueprint'/Game/Blueprints/Enemies/BP_BaseEnemy.BP_BaseEnemy_C'"));
+        //if (MyBlueprintClass)
+        //    GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("BP GET"));
         FActorSpawnParameters SpawnParams;
         SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
         ABaseEnemy* NewEnemy = World->SpawnActor<ABaseEnemy>(EnemyClass, TPList[0]->GetActorLocation(), Rotation, SpawnParams);
+        //ATower* NewTower = World->SpawnActor<ATower>(MyBlueprintClass, TPList[0]->GetActorLocation(), Rotation, SpawnParams);
         return NewEnemy;
     }
     return nullptr;
