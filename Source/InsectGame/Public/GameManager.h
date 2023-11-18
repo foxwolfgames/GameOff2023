@@ -21,6 +21,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	int32 Amount = 0;
 };
+
 USTRUCT()
 struct INSECTGAME_API FEnemies
 {
@@ -107,12 +108,12 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	//For some reason, EditAnywhere is necessary for EnemyManager or else it doesn't get set...
 	UPROPERTY(EditAnywhere)
 	ANavigationManager* NavigationManager;
 	UPROPERTY(EditAnywhere)
 	AEnemyManager* EnemyManager;
 	int8 laneIndex = 1;
+	bool LockStartWave = false;
 	//UPROPERTY(EditAnywhere, Category = "Enemies")
 	//TArray<int32> EnemiesCount;
 	UPROPERTY()

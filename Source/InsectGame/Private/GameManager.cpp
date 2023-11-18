@@ -46,6 +46,9 @@ void AGameManager::StartPrepPhase()
 
 void AGameManager::StartAttackPhase()
 {
+	if (LockStartWave)
+		return;
+	LockStartWave = true;
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, TEXT("Starting Attack Phase"));
 	CountDown(3);
@@ -53,11 +56,11 @@ void AGameManager::StartAttackPhase()
 
 void AGameManager::SpawnWave()
 {
+	CurrentEnemy = 0;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AGameManager::SpawnEnemy, 1.f, true, 1.f);
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, FString::Printf(TEXT("Spawning Wave %d"), CurrentWave));
 
-	CurrentEnemy = 0;
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AGameManager::SpawnEnemy, 1.f, true, 1.f);
 }
 
 void AGameManager::SpawnEnemy()
@@ -82,6 +85,12 @@ void AGameManager::SpawnEnemy()
 	{
 		GetWorldTimerManager().SetTimer(TimerHandle, this, &AGameManager::SpawnEnemy, 1.0f, false);
 	}
+	else
+	{
+		LockStartWave = false;
+		CurrentWave++;
+	}
+		
 
 }
 
