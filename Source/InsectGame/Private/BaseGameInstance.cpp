@@ -7,30 +7,4 @@
 UBaseGameInstance::UBaseGameInstance()
 {
 }
-
-void UBaseGameInstance::SetTowerManager(ATowerManager* TM)
-{
-	TowerManager = TM;
-}
-
-ATowerManager* UBaseGameInstance::GetTowerManager() const
-{
-	return TowerManager;
-}
-void UBaseGameInstance::SetEnemyManager(AEnemyManager* EM)
-{
-	EnemyManager = EM;
-}
-AEnemyManager* UBaseGameInstance::GetEnemyManager() const
-{
-	return EnemyManager;
-}
-void UBaseGameInstance::SetNavigationManager(ANavigationManager* NM)
-{
-	NavigationManager = NM;
-}
-ANavigationManager* UBaseGameInstance::GetNavigationManager() const
-{
-	return NavigationManager;
-}
 /**/

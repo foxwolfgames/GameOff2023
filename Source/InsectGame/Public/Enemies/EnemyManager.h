@@ -16,13 +16,16 @@ class INSECTGAME_API AEnemyManager : public AActor
 	
 public:	
 	AEnemyManager();
+	UPROPERTY()
+	AEnemyFactory* EnemyFactory;
 	//virtual void Tick(float DeltaTime) override;
 	UPROPERTY(EditAnywhere, Category = "Enemies")
 	TArray<TSubclassOf<ABaseEnemy>> EnemyTypes;
 
 	//Functions
 	//ABaseEnemy* GetEnemyByIndex(int32 index);
-	void DeployEnemy(int32 index, TArray<AActor*> TPList, FRotator Rotation);
+	UFUNCTION(CallInEditor)
+	void DeployEnemy(TSubclassOf<ABaseEnemy> BP, const TArray<AActor*>& TPList, FRotator Rotation);
 
 protected:
 	virtual void BeginPlay() override;
@@ -30,8 +33,6 @@ protected:
 private:
 	UPROPERTY()
 	int32 EnemyTypeSize;
-	UPROPERTY()
-	AEnemyFactory* EnemyFactory;
 	UPROPERTY()
 	TArray<ABaseEnemy*> EnemiesList;
 };

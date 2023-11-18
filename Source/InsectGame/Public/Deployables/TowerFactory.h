@@ -16,11 +16,11 @@ class INSECTGAME_API ATowerFactory : public AActor
 public:	
 	//ATowerFactory();
 	//virtual void Tick(float DeltaTime) override;
+	UFUNCTION()
 	ATower* CreateTower(TSubclassOf<ATower> TowerClass, FVector Location, FRotator Rotation);
 
 protected:
 	virtual void BeginPlay() override;
 
 private:	
-
 };

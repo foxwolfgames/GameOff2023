@@ -16,11 +16,12 @@ class INSECTGAME_API AEnemyFactory : public AActor
 public:	
 	//AEnemyFactory();
 	//virtual void Tick(float DeltaTime) override;
-	ABaseEnemy* CreateEnemy(TSubclassOf<ABaseEnemy> TowerClass, TArray<AActor*> TPList, FRotator Rotation);
+	UFUNCTION(CallInEditor)
+	ABaseEnemy* CreateEnemy(TSubclassOf<ABaseEnemy> EnemyClass, const TArray<AActor*>& TPList, FRotator Rotation);
 
 protected:
 	virtual void BeginPlay() override;
 
-private:	
+private:
 
 };

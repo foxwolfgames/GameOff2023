@@ -25,7 +25,7 @@ ABaseEnemy::ABaseEnemy()
 	GetCharacterMovement()->MaxWalkSpeed = 150.f;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
-	bUseControllerRotationYaw = false;
+	bUseControllerRotationYaw = false;/**/
 
 	//GetMesh()->SetGenerateOverlapEvents(true);
 }
@@ -38,12 +38,12 @@ void ABaseEnemy::BeginPlay()
 	if (UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance()))
 	{
 		NavigationManager = GameInstance->GetNavigationManager();
-	}
+	}/*
 	if (NavigationManager)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Navigation Manager Set"));
-		CurrentTarget =NavigationManager->TargetPointArr1[0];
-	}
+		CurrentTarget = NavigationManager->TargetPointArr1[0];
+	}*/
 	//AIController->MoveToLocation(FVector(0.f, 0.f, 110.f), 20.f, true, true, true);
 }
 
@@ -57,20 +57,24 @@ bool ABaseEnemy::InTargetRange(AActor* Target, double Radius)
 void ABaseEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (!CurrentTarget && (CurrentLane.Num() > 1))
+	{
+		CurrentTarget = CurrentLane[CurrentLaneIndex++];
+		AIController->MoveToActor(CurrentTarget);
+	}
 	if (CurrentTarget && AIController)
 	{
-		if (!InTargetRange(CurrentTarget, 200.f))
+		if (InTargetRange(CurrentTarget, 150.f) && (CurrentLaneIndex < CurrentLane.Num()))
 		{
+			CurrentTarget = CurrentLane[CurrentLaneIndex++];
 			AIController->MoveToActor(CurrentTarget);
 		}
-	}
+	}/**/
 	
 }
 
-// Called to bind functionality to input
-void ABaseEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ABaseEnemy::SetCurrentLane(TArray<AActor*> Lane)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	CurrentLane = Lane;
 }
 
