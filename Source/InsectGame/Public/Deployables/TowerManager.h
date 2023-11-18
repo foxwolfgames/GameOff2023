@@ -21,7 +21,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Towers")
 	TArray<TSubclassOf<ATower>> TowerTypes;
 	//Functions
+	UFUNCTION()
 	ATower* GetTowerByIndex(int32 index);
+	UFUNCTION()
 	void DeployTower(int32 index, FVector Location, FRotator Rotation);
 
 protected:
@@ -33,7 +35,7 @@ private:
 	//Cache
 	UPROPERTY()
 	ATowerFactory* TowerFactory;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	TArray<ATower*> PreviewTowers;
 	UPROPERTY()
 	TArray<ATower*> TowersList;

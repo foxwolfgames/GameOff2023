@@ -147,9 +147,12 @@ void ALizard::RayTrace()
 		{
 			if (TowerManager)
 			{
-				TowerManager->GetTowerByIndex(PreviewTowerIndex)->SetVisibility(true);
-				TowerManager->GetTowerByIndex(PreviewTowerIndex)->UpdatePosition(RayHitLocation, RayHitRotation);
-				bCanPlace = true;
+				if (TowerManager->GetTowerByIndex(PreviewTowerIndex))
+				{
+					TowerManager->GetTowerByIndex(PreviewTowerIndex)->SetVisibility(true);
+					TowerManager->GetTowerByIndex(PreviewTowerIndex)->UpdatePosition(RayHitLocation, RayHitRotation);
+					bCanPlace = true;
+				}
 			}
 		}
 	}
@@ -157,21 +160,19 @@ void ALizard::RayTrace()
 	{
 		bCanPlace = false;
 		if (E_Toggle)
-		{
 			if (TowerManager)
-			{
-				TowerManager->GetTowerByIndex(PreviewTowerIndex)->SetVisibility(false);
-			}
-		}
+				if (TowerManager->GetTowerByIndex(PreviewTowerIndex))
+					TowerManager->GetTowerByIndex(PreviewTowerIndex)->SetVisibility(false);
 	}
 }
 
 void ALizard::PreviewTower(int32 index)
 {
 	if (TowerManager)
-	{
-		E_Toggle ? TowerManager->GetTowerByIndex(index)->SetVisibility(true) : TowerManager->GetTowerByIndex(index)->SetVisibility(false);
-	}
+		if (TowerManager->GetTowerByIndex(index)) {
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("PreviewTower"));
+			E_Toggle ? TowerManager->GetTowerByIndex(index)->SetVisibility(true) : TowerManager->GetTowerByIndex(index)->SetVisibility(false);
+		}
 }
 
 void ALizard::PlaceTower()

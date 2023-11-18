@@ -123,7 +123,7 @@ private:
 	FTimerHandle TimerHandle;
 	UPROPERTY()
 	int32 TimeCount;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Waves List")
 	TArray<FWave> WaveList;
 	//Functions
 	UFUNCTION()
