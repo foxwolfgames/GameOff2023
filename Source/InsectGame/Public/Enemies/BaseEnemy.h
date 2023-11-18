@@ -17,16 +17,21 @@ class INSECTGAME_API ABaseEnemy : public ACharacter
 public:
 	ABaseEnemy();
 	virtual void Tick(float DeltaTime) override;
+	void SetCurrentLane(TArray<AActor*> Lane);
 	//virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
+	//Cache
 	UPROPERTY(EditAnywhere);
 	AAIController* AIController;
 	UPROPERTY(VisibleAnywhere)
 	ANavigationManager* NavigationManager;
+	UPROPERTY()
+	TArray<AActor*> CurrentLane;
+	int8 CurrentLaneIndex = 1;
 	float PatrolRadius = 200.f;
 	UPROPERTY()
 	AActor* CurrentTarget;/**/

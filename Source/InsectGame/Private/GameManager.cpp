@@ -10,7 +10,6 @@
 AGameManager::AGameManager()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	Wave.SetNum(10);
 }
 
 void AGameManager::BeginPlay()
@@ -28,6 +27,8 @@ void AGameManager::BeginPlay()
 	}
 	CurrentWave = 0;
 	CurrentEnemy = 0;
+	WaveList.SetNum(Waves.Num());
+	RandomSort();
 	StartPrepPhase();
 }
 
@@ -61,21 +62,54 @@ void AGameManager::SpawnWave()
 
 void AGameManager::SpawnEnemy()
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, TEXT("In SpawnEnemy"));
 	if (EnemyManager && NavigationManager)
 	{
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Spawning Enemy Type %d"), Wave[CurrentWave].GetVal(1, CurrentEnemy)));
-		//EnemyManager->DeployEnemy(Wave[CurrentWave].GetVal(1, CurrentEnemy), NavigationManager->TargetPointArr1, FRotator::ZeroRotator);
-		EnemyManager->DeployEnemy(0, NavigationManager->TargetPointArr1, FRotator::ZeroRotator);
+		//if (GEngine)
+		//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Spawning Enemy Type %d"), Wave[CurrentWave].GetVal(1, CurrentEnemy)));
+		if (WaveList[CurrentWave].GetBP(1, CurrentEnemy))
+			EnemyManager->DeployEnemy(WaveList[CurrentWave].GetBP(1, CurrentEnemy), NavigationManager->TargetPointArr1, FRotator::ZeroRotator);
+		if (WaveList[CurrentWave].GetBP(2, CurrentEnemy))
+			EnemyManager->DeployEnemy(WaveList[CurrentWave].GetBP(2, CurrentEnemy), NavigationManager->TargetPointArr2, FRotator::ZeroRotator);
+		if (WaveList[CurrentWave].GetBP(3, CurrentEnemy))
+			EnemyManager->DeployEnemy(WaveList[CurrentWave].GetBP(3, CurrentEnemy), NavigationManager->TargetPointArr3, FRotator::ZeroRotator);
+		if (WaveList[CurrentWave].GetBP(4, CurrentEnemy))
+			EnemyManager->DeployEnemy(WaveList[CurrentWave].GetBP(4, CurrentEnemy), NavigationManager->TargetPointArr4, FRotator::ZeroRotator);
+		//EnemyManager->DeployEnemy(Waves[CurrentWave].EnemyBP, NavigationManager->TargetPointArr1, FRotator::ZeroRotator);
 	}
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Current Enemy %d"), CurrentEnemy));
 	CurrentEnemy++;
-	if (CurrentEnemy < Wave[CurrentWave].Lane1.Num())
+	if (CurrentEnemy < WaveList[CurrentWave].Lane1.Num() + 1)
 	{
 		GetWorldTimerManager().SetTimer(TimerHandle, this, &AGameManager::SpawnEnemy, 1.0f, false);
 	}
 
+}
+
+void AGameManager::RandomSort()
+{
+	//For each wave:
+	for (int8 waveIndex = 0; waveIndex <Waves.Num(); waveIndex++)
+	{
+		TArray<int32> TempArr;
+		//TempArr.SetNum(Waves[waveIndex].EnemyArray.Num());
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("EnemyArrayNum %d"), Waves[waveIndex].EnemyArray.Num()));
+		for (int8 i = 0; i < Waves[waveIndex].EnemyArray.Num(); i++)
+		{
+			TempArr.Add(Waves[waveIndex].EnemyArray[i].Amount);
+		}
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("TempArrNum %d"), TempArr.Num()));
+		while (!TempArr.IsEmpty())
+		{
+			int32 ranIndex = FMath::RandRange(0, TempArr.Num() - 1);
+			WaveList[waveIndex].AddBP(laneIndex++, Waves[waveIndex].EnemyArray[ranIndex].EnemyBP);
+			if (laneIndex > 4)
+				laneIndex = 1;
+			if(TempArr[ranIndex] > 1)
+				TempArr[ranIndex]--;
+			else
+				TempArr.RemoveAt(ranIndex);
+		}
+	}
 }
 
 void AGameManager::CountDown(int32 start)

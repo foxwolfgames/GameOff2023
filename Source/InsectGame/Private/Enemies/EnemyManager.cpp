@@ -33,13 +33,11 @@ void AEnemyManager::BeginPlay()
 
 //ABaseEnemy* AEnemyManager::GetEnemyByIndex(int32 index){}
 
-void AEnemyManager::DeployEnemy(int32 index, const TArray<AActor*>& TPList, FRotator Rotation)
+void AEnemyManager::DeployEnemy(TSubclassOf<ABaseEnemy> BP, const TArray<AActor*>& TPList, FRotator Rotation)
 {
-    if (!(index >= 0 && index < EnemyTypeSize))
-        return;
     if (EnemyFactory)
     {
-        ABaseEnemy* NewEnemy = EnemyFactory->CreateEnemy(EnemyTypes[index], TPList, Rotation);
+        ABaseEnemy* NewEnemy = EnemyFactory->CreateEnemy(BP, TPList, Rotation);
 
         if (NewEnemy)
         {

@@ -57,13 +57,24 @@ bool ABaseEnemy::InTargetRange(AActor* Target, double Radius)
 void ABaseEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (!CurrentTarget && (CurrentLane.Num() > 1))
+	{
+		CurrentTarget = CurrentLane[CurrentLaneIndex++];
+		AIController->MoveToActor(CurrentTarget);
+	}
 	if (CurrentTarget && AIController)
 	{
-		if (!InTargetRange(CurrentTarget, 200.f))
+		if (InTargetRange(CurrentTarget, 150.f) && (CurrentLaneIndex < CurrentLane.Num()))
 		{
+			CurrentTarget = CurrentLane[CurrentLaneIndex++];
 			AIController->MoveToActor(CurrentTarget);
 		}
 	}/**/
 	
+}
+
+void ABaseEnemy::SetCurrentLane(TArray<AActor*> Lane)
+{
+	CurrentLane = Lane;
 }
 

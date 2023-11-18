@@ -20,12 +20,12 @@ public:
 	AEnemyFactory* EnemyFactory;
 	//virtual void Tick(float DeltaTime) override;
 	UPROPERTY(EditAnywhere, Category = "Enemies")
-	TArray<TSubclassOf<class ABaseEnemy>> EnemyTypes;
+	TArray<TSubclassOf<ABaseEnemy>> EnemyTypes;
 
 	//Functions
 	//ABaseEnemy* GetEnemyByIndex(int32 index);
 	UFUNCTION(CallInEditor)
-	void DeployEnemy(int32 index, const TArray<AActor*>& TPList, FRotator Rotation);
+	void DeployEnemy(TSubclassOf<ABaseEnemy> BP, const TArray<AActor*>& TPList, FRotator Rotation);
 
 protected:
 	virtual void BeginPlay() override;

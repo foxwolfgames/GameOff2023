@@ -4,47 +4,85 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Enemies/BaseEnemy.h"
+
 #include "GameManager.generated.h"
 
 class AEnemyManager;
 class ANavigationManager;
 
 USTRUCT()
+struct INSECTGAME_API FEnemy
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ABaseEnemy> EnemyBP;
+	UPROPERTY(EditAnywhere)
+	int32 Amount = 0;
+};
+USTRUCT()
+struct INSECTGAME_API FEnemies
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+	TArray<FEnemy> EnemyArray;
+};
+
+USTRUCT()
 struct INSECTGAME_API FWave
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY()
-	TArray<int32> Lane1 = { 0, 0, 0 };
-	UPROPERTY()
-	TArray<int32> Lane2 = { 0 };
-	UPROPERTY()
-	TArray<int32> Lane3 = { 0 };
-	UPROPERTY()
-	TArray<int32> Lane4 = { 0 };
-
-	int32 GetVal(int8 lane, int32 index)
+	UPROPERTY(EditAnywhere)
+	TArray<TSubclassOf<ABaseEnemy>> Lane1;
+	UPROPERTY(EditAnywhere)
+	TArray<TSubclassOf<ABaseEnemy>> Lane2;
+	UPROPERTY(EditAnywhere)
+	TArray<TSubclassOf<ABaseEnemy>> Lane3;
+	UPROPERTY(EditAnywhere)
+	TArray<TSubclassOf<ABaseEnemy>> Lane4;
+	void AddBP(int8 lane, TSubclassOf<ABaseEnemy> BP)
 	{
 		switch (lane)
 		{
 		case 1:
-			return GetValFromLane(Lane1, index);
+			Lane1.Add(BP);
+			return;
 		case 2:
-			return GetValFromLane(Lane2, index);
+			Lane2.Add(BP);
+			return;
 		case 3:
-			return GetValFromLane(Lane3, index);
+			Lane3.Add(BP);
+			return;
 		case 4:
-			return GetValFromLane(Lane4, index);
+			Lane4.Add(BP);
+			return;
+		}
+	}
+	TSubclassOf<ABaseEnemy> GetBP(int8 lane, int32 index)
+	{
+		switch (lane)
+		{
+		case 1:
+			return GetBPFromLane(Lane1, index);
+		case 2:
+			return GetBPFromLane(Lane2, index);
+		case 3:
+			return GetBPFromLane(Lane3, index);
+		case 4:
+			return GetBPFromLane(Lane4, index);
 		default:
-			return -1;
+			return nullptr;
 		}
 	}
 private:
-	int32 GetValFromLane(const TArray<int32>& Lane, int32 index)
+	TSubclassOf<ABaseEnemy> GetBPFromLane(const TArray<TSubclassOf<ABaseEnemy>>& Lane, int32 index)
 	{
 		if (index >= 0 && index < Lane.Num())
 			return Lane[index];
-		return -1;
+		return nullptr;
 	}
 };
 
@@ -62,6 +100,9 @@ public:
 	UFUNCTION()
 	void StartAttackPhase();
 
+	UPROPERTY(EditAnywhere, Category = "Waves List")
+	TArray<FEnemies> Waves;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -71,6 +112,7 @@ private:
 	ANavigationManager* NavigationManager;
 	UPROPERTY(EditAnywhere)
 	AEnemyManager* EnemyManager;
+	int8 laneIndex = 1;
 	//UPROPERTY(EditAnywhere, Category = "Enemies")
 	//TArray<int32> EnemiesCount;
 	UPROPERTY()
@@ -81,13 +123,15 @@ private:
 	FTimerHandle TimerHandle;
 	UPROPERTY()
 	int32 TimeCount;
-	UPROPERTY()
-	TArray<FWave> Wave;
+	UPROPERTY(EditAnywhere)
+	TArray<FWave> WaveList;
 	//Functions
 	UFUNCTION()
 	void SpawnWave();
 	UFUNCTION()
 	void SpawnEnemy();
+	UFUNCTION()
+	void RandomSort();
 	UFUNCTION()
 	void CountDown(int32 start);
 	UFUNCTION()
