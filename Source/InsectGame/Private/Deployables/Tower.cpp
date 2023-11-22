@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "Enemies/BaseEnemy.h"
 #include "Deployables/Tower.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -47,10 +47,20 @@ void ATower::ToggleTower(bool b)
 	SetActorTickEnabled(b);
 }
 
-void ATower::FireAtTarget(AActor* Target)
+//past parameter: AActor* Target
+void ATower::DetectEnemy()
 {
-	if (!Target)
-		return;
+	TArray<ABaseEnemy*> EnemiesInRange;
+
+	for (ABaseEnemy* Enemy : EnemiesInRange)
+	{
+		FireProjectiles(Enemy);
+	}
+}
+
+void ATower::FireProjectiles(ABaseEnemy* TargetEnemy)
+{
+
 }
 
 // Called every frame
