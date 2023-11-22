@@ -24,11 +24,13 @@ ALizard::ALizard()
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetRootComponent());
-	SpringArm->TargetArmLength = 200.f;
+	SpringArm->TargetArmLength = SpringArmLength;
 
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("CharacterCamera"));
 	ViewCamera->SetupAttachment(SpringArm);
 
+	GetCharacterMovement()->MaxWalkSpeed = Big_WalkSpeed;
+	GetCharacterMovement()->MaxStepHeight = StepHeight;
 }
 
 void ALizard::BeginPlay()
@@ -38,7 +40,7 @@ void ALizard::BeginPlay()
 	if (GameInstance)
 	{
 		TowerManager = GameInstance->GetTowerManager();
-		if(TowerManager)
+		if (TowerManager)
 			UE_LOG(LogTemp, Warning, TEXT("Got TowerManager"));
 	}
 	PlayerControl = Cast<APlayerController>(GetController());
@@ -83,7 +85,7 @@ void ALizard::EKey()
 {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("EKey"));
-	E_Toggle  = !E_Toggle;
+	E_Toggle = !E_Toggle;
 	PreviewTower(PreviewTowerIndex);
 }
 
@@ -107,6 +109,16 @@ void ALizard::LMB()
 	PlaceTower();
 }
 
+void ALizard::LShift()
+{
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Black, TEXT("LShift"));
+	if (bIsResizing)
+		return;
+	ResizeProgress = 0;
+	bIsResizing = true;
+}
+
 void ALizard::ESC()
 {
 	if (GEngine)
@@ -125,7 +137,7 @@ void ALizard::RayTrace()
 	TraceParams.AddIgnoredActor(this);
 	TraceParams.TraceTag = FName("FloorTrace");
 
-	float TraceDistance = 600.0f;
+	float TraceDistance = PlaceObjectDistance * 6;
 	FVector TraceEnd = CameraLocation + (TraceDirection * TraceDistance);
 
 	FHitResult HitResult;
@@ -134,11 +146,11 @@ void ALizard::RayTrace()
 	AActor* HitActor = HitResult.GetActor();
 	if (GEngine)
 	{
-		FColor DebugColor = bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > 100.f) && HitActor->ActorHasTag("Placable") ? FColor::Green : FColor::Red;
+		FColor DebugColor = bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > PlaceObjectDistance) && HitActor->ActorHasTag("Placable") ? FColor::Green : FColor::Red;
 		DrawDebugLine(GetWorld(), CameraLocation, TraceEnd, DebugColor, false, -1, 0, 1.0f);
 	}
 
-	if (bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > 100.f) && HitActor->ActorHasTag("Placable"))
+	if (bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > PlaceObjectDistance) && HitActor->ActorHasTag("Placable"))
 	{
 		//Note: initialize RayHitLocation when beginning raytrace, currently 0,0,0
 		RayHitLocation = HitResult.ImpactPoint;
@@ -190,6 +202,44 @@ void ALizard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	RayTrace();
+	if (bIsResizing)
+		UpdateSize(DeltaTime);
+}
+
+void ALizard::UpdateSize(float DeltaTime)
+{
+	if (!bIsResizing)
+		return;
+	if (bIsBig)
+	{
+		ResizeProgress = FMath::Clamp(ResizeProgress + (DeltaTime / .5f), 0.0f, 1.0f);
+		GetRootComponent()->SetWorldScale3D(FMath::Lerp(FVector(1.f, 1.f, 1.f), FVector(ShrinkScale, ShrinkScale, ShrinkScale), ResizeProgress));
+		SpringArm->TargetArmLength = FMath::Lerp(SpringArmLength, SpringArmLength * ShrinkScale * 2.f, ResizeProgress);
+		GetCharacterMovement()->MaxWalkSpeed = FMath::Lerp(Big_WalkSpeed, Small_WalkSpeed, ResizeProgress);
+		GetCharacterMovement()->MaxStepHeight = FMath::Lerp(StepHeight, StepHeight * ShrinkScale, ResizeProgress);
+		SpringArm->ProbeSize = FMath::Lerp(ProbeSize, ProbeSize * ShrinkScale, ResizeProgress);
+		PlaceObjectDistance = FMath::Lerp(MaxPlaceObjectDistance, MaxPlaceObjectDistance * ShrinkScale * 2.f, ResizeProgress);
+		if (ResizeProgress >= 1.f)
+		{
+			bIsResizing = false;
+			bIsBig = false;
+		}
+	}
+	else
+	{
+		ResizeProgress = FMath::Clamp(ResizeProgress + (DeltaTime / .5f), 0.0f, 1.0f);
+		GetRootComponent()->SetWorldScale3D(FMath::Lerp(FVector(ShrinkScale, ShrinkScale, ShrinkScale), FVector(1.f, 1.f, 1.f), ResizeProgress));
+		SpringArm->TargetArmLength = FMath::Lerp(SpringArmLength * ShrinkScale * 2.f, SpringArmLength, ResizeProgress);
+		GetCharacterMovement()->MaxWalkSpeed = FMath::Lerp(Small_WalkSpeed, Big_WalkSpeed, ResizeProgress);
+		GetCharacterMovement()->MaxStepHeight = FMath::Lerp(StepHeight * ShrinkScale, StepHeight, ResizeProgress);
+		SpringArm->ProbeSize = FMath::Lerp(ProbeSize * ShrinkScale, ProbeSize, ResizeProgress);
+		PlaceObjectDistance = FMath::Lerp(MaxPlaceObjectDistance * ShrinkScale * 2.f, MaxPlaceObjectDistance, ResizeProgress);
+		if (ResizeProgress >= 1.f)
+		{
+			bIsResizing = false;
+			bIsBig = true;
+		}
+	}
 }
 
 void ALizard::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -203,6 +253,7 @@ void ALizard::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(EKeyAction, ETriggerEvent::Started, this, &ALizard::EKey);
 		EnhancedInputComponent->BindAction(RKeyAction, ETriggerEvent::Started, this, &ALizard::RKey);
 		EnhancedInputComponent->BindAction(LMBAction, ETriggerEvent::Started, this, &ALizard::LMB);
+		EnhancedInputComponent->BindAction(LShiftAction, ETriggerEvent::Started, this, &ALizard::LShift);
 		EnhancedInputComponent->BindAction(ESCAction, ETriggerEvent::Started, this, &ALizard::ESC);
 	}
 }

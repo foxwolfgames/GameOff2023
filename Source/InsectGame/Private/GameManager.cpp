@@ -46,7 +46,7 @@ void AGameManager::StartPrepPhase()
 
 void AGameManager::StartAttackPhase()
 {
-	if (LockStartWave)
+	if (LockStartWave || CurrentWave >= Waves.Num())
 		return;
 	LockStartWave = true;
 	if (GEngine)
@@ -90,14 +90,14 @@ void AGameManager::SpawnEnemy()
 		LockStartWave = false;
 		CurrentWave++;
 	}
-		
+
 
 }
 
 void AGameManager::RandomSort()
 {
 	//For each wave:
-	for (int8 waveIndex = 0; waveIndex <Waves.Num(); waveIndex++)
+	for (int8 waveIndex = 0; waveIndex < Waves.Num(); waveIndex++)
 	{
 		TArray<int32> TempArr;
 		//TempArr.SetNum(Waves[waveIndex].EnemyArray.Num());
@@ -113,7 +113,7 @@ void AGameManager::RandomSort()
 			WaveList[waveIndex].AddBP(laneIndex++, Waves[waveIndex].EnemyArray[ranIndex].EnemyBP);
 			if (laneIndex > 4)
 				laneIndex = 1;
-			if(TempArr[ranIndex] > 1)
+			if (TempArr[ranIndex] > 1)
 				TempArr[ranIndex]--;
 			else
 				TempArr.RemoveAt(ranIndex);
