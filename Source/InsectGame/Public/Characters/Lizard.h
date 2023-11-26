@@ -31,19 +31,19 @@ public:
 	UPROPERTY(EditAnywhere)
 	float ShrinkScale = .05f;
 	UPROPERTY(EditAnywhere)
-	float SpringArmLength = 200.f;
+	float SpringArmLength = 300.f;
 	UPROPERTY(EditAnywhere)
 	float ProbeSize = 12.f;
 	UPROPERTY(EditAnywhere)
 	float StepHeight = 45.f;
 	UPROPERTY(EditAnywhere)
-	float Big_WalkSpeed = 500.f;
+	float Big_WalkSpeed = 600.f;
 	UPROPERTY(EditAnywhere)
-	float Small_WalkSpeed = 150.f;
+	float Small_WalkSpeed = 250.f;
 	UPROPERTY(EditAnywhere)
-	float PlaceObjectDistance = 100.f;
+	float PlaceObjectDistance = 150.f;
 	UPROPERTY(EditAnywhere)
-	float MaxPlaceObjectDistance = 100.f;
+	float MaxPlaceObjectDistance = 150.f;
 
 protected:
 	virtual void BeginPlay() override;
@@ -111,6 +111,8 @@ private:
 	void PreviewTower(int32 index);
 	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Functions")
 	void PlaceTower();
+	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Functions")
+	void MeleeAttack();
 
 	UFUNCTION()
 	void UpdateSize(float DeltaTime);

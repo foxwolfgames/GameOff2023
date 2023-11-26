@@ -1,5 +1,6 @@
 //Classes File
 #include "Characters/Lizard.h"
+#include "Enemies/BaseEnemy.h"
 #include "BaseGameInstance.h"
 #include "GameManager.h"
 #include "Deployables/TowerManager.h"
@@ -106,7 +107,10 @@ void ALizard::LMB()
 {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("LMB"));
-	PlaceTower();
+	if (E_Toggle)
+		PlaceTower();
+	else
+		MeleeAttack();
 }
 
 void ALizard::LShift()
@@ -189,11 +193,49 @@ void ALizard::PreviewTower(int32 index)
 
 void ALizard::PlaceTower()
 {
-	if (bCanPlace && E_Toggle && TowerManager)
+	if (bCanPlace && TowerManager)
 	{
 		if (TowerManager)
 		{
 			TowerManager->DeployTower(0, RayHitLocation, RayHitRotation);
+		}
+	}
+}
+
+void ALizard::MeleeAttack()
+{
+	float meleeDamage = 50.f;
+
+	FCollisionShape MeleeCollisionShape = FCollisionShape::MakeSphere(100.f);
+
+	TArray<FHitResult> HitResults;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+	bool bHit = GetWorld()->SweepMultiByChannel(
+		HitResults,
+		GetActorLocation(),
+		GetActorLocation() + GetActorForwardVector() * MeleeCollisionShape.GetSphereRadius(),
+		FQuat::Identity,
+		ECC_Pawn,
+		MeleeCollisionShape,
+		CollisionParams
+	);
+	if (GetWorld())
+	{
+		FVector StartLocation = GetActorLocation();
+		FVector EndLocation = StartLocation + GetActorForwardVector() * MeleeCollisionShape.GetSphereRadius();
+		DrawDebugSphere(GetWorld(), StartLocation, MeleeCollisionShape.GetSphereRadius(), 12, FColor::Green, false, 0.2f);
+	}
+	for (const FHitResult& Hit : HitResults)
+	{
+		// Check if the hit actor is an enemy
+		ABaseEnemy* EnemyActor = Cast<ABaseEnemy>(Hit.GetActor());
+		if (EnemyActor)
+		{
+			// Apply damage to the enemy actor
+			//EnemyActor->TakeDamage(meleeDamage, FDamageEvent(), nullptr, this);
+			if (GEngine)
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Hit Enemy"));
 		}
 	}
 }

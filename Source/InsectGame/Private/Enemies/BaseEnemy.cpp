@@ -78,3 +78,8 @@ void ABaseEnemy::SetCurrentLane(TArray<AActor*> Lane)
 	CurrentLane = Lane;
 }
 
+void ABaseEnemy::GetHit(const FVector& ImpactPoint)
+{
+	DrawDebugSphere(GetWorld(), ImpactPoint, 25.f, 12, FColor::Red, true);
+}
+
