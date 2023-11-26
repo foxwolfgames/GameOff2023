@@ -44,6 +44,10 @@ public:
 	float PlaceObjectDistance = 150.f;
 	UPROPERTY(EditAnywhere)
 	float MaxPlaceObjectDistance = 150.f;
+	UPROPERTY(EditAnywhere)
+	float AttackRadius = 100.f;
+	UPROPERTY(EditAnywhere)
+	float CurrentAttackRadius = 100.f;
 
 protected:
 	virtual void BeginPlay() override;

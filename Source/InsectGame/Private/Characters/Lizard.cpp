@@ -204,17 +204,21 @@ void ALizard::PlaceTower()
 
 void ALizard::MeleeAttack()
 {
-	float meleeDamage = 50.f;
+	float MeleeDamage = 50.f;
 
-	FCollisionShape MeleeCollisionShape = FCollisionShape::MakeSphere(100.f);
+	FCollisionShape MeleeCollisionShape = FCollisionShape::MakeSphere(CurrentAttackRadius);
 
 	TArray<FHitResult> HitResults;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
+
+	FVector StartTrace = GetActorLocation() + GetActorForwardVector() * CurrentAttackRadius;
+	FVector EndTrace = StartTrace + GetActorForwardVector() * MeleeCollisionShape.GetSphereRadius();
+
 	bool bHit = GetWorld()->SweepMultiByChannel(
 		HitResults,
-		GetActorLocation(),
-		GetActorLocation() + GetActorForwardVector() * MeleeCollisionShape.GetSphereRadius(),
+		StartTrace,
+		EndTrace,
 		FQuat::Identity,
 		ECC_Pawn,
 		MeleeCollisionShape,
@@ -223,8 +227,7 @@ void ALizard::MeleeAttack()
 	if (GetWorld())
 	{
 		FVector StartLocation = GetActorLocation();
-		FVector EndLocation = StartLocation + GetActorForwardVector() * MeleeCollisionShape.GetSphereRadius();
-		DrawDebugSphere(GetWorld(), StartLocation, MeleeCollisionShape.GetSphereRadius(), 12, FColor::Green, false, 0.2f);
+		DrawDebugSphere(GetWorld(), StartTrace, MeleeCollisionShape.GetSphereRadius(), 12, FColor::Green, false, 0.2f);
 	}
 	for (const FHitResult& Hit : HitResults)
 	{
@@ -261,6 +264,7 @@ void ALizard::UpdateSize(float DeltaTime)
 		GetCharacterMovement()->MaxStepHeight = FMath::Lerp(StepHeight, StepHeight * ShrinkScale, ResizeProgress);
 		SpringArm->ProbeSize = FMath::Lerp(ProbeSize, ProbeSize * ShrinkScale, ResizeProgress);
 		PlaceObjectDistance = FMath::Lerp(MaxPlaceObjectDistance, MaxPlaceObjectDistance * ShrinkScale * 2.f, ResizeProgress);
+		CurrentAttackRadius = FMath::Lerp(AttackRadius, AttackRadius * ShrinkScale, ResizeProgress);
 		if (ResizeProgress >= 1.f)
 		{
 			bIsResizing = false;
@@ -276,6 +280,7 @@ void ALizard::UpdateSize(float DeltaTime)
 		GetCharacterMovement()->MaxStepHeight = FMath::Lerp(StepHeight * ShrinkScale, StepHeight, ResizeProgress);
 		SpringArm->ProbeSize = FMath::Lerp(ProbeSize * ShrinkScale, ProbeSize, ResizeProgress);
 		PlaceObjectDistance = FMath::Lerp(MaxPlaceObjectDistance * ShrinkScale * 2.f, MaxPlaceObjectDistance, ResizeProgress);
+		CurrentAttackRadius = FMath::Lerp(AttackRadius * ShrinkScale, AttackRadius, ResizeProgress);
 		if (ResizeProgress >= 1.f)
 		{
 			bIsResizing = false;
