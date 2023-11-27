@@ -80,6 +80,8 @@ void ABaseEnemy::SetCurrentLane(TArray<AActor*> Lane)
 
 void ABaseEnemy::GetHit(const FVector& ImpactPoint)
 {
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Hit Enemy"));
 	DrawDebugSphere(GetWorld(), ImpactPoint, 25.f, 12, FColor::Red, true);
 }
 

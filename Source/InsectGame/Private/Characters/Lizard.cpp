@@ -231,14 +231,10 @@ void ALizard::MeleeAttack()
 	}
 	for (const FHitResult& Hit : HitResults)
 	{
-		// Check if the hit actor is an enemy
 		ABaseEnemy* EnemyActor = Cast<ABaseEnemy>(Hit.GetActor());
 		if (EnemyActor)
 		{
-			// Apply damage to the enemy actor
-			//EnemyActor->TakeDamage(meleeDamage, FDamageEvent(), nullptr, this);
-			if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Hit Enemy"));
+			EnemyActor->GetHit(Hit.ImpactPoint);
 		}
 	}
 }
