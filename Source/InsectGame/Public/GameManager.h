@@ -10,6 +10,7 @@
 
 class AEnemyManager;
 class ANavigationManager;
+class UAudioComponent;
 
 USTRUCT()
 struct INSECTGAME_API FEnemy
@@ -104,6 +105,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Waves List")
 	TArray<FEnemies> Waves;
 
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	UAudioComponent* PrepPhaseBGMusic;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	UAudioComponent* DefensePhaseBGMusic;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -114,6 +121,7 @@ private:
 	AEnemyManager* EnemyManager;
 	int8 laneIndex = 1;
 	bool LockStartWave = false;
+	bool PrepState = true;
 	//UPROPERTY(EditAnywhere, Category = "Enemies")
 	//TArray<int32> EnemiesCount;
 	UPROPERTY()

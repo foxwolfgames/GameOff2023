@@ -6,15 +6,19 @@
 #include "TimerManager.h"
 #include "Enemies/EnemyManager.h"
 #include "Enemies/NavigationManager.h"
+#include "Components/AudioComponent.h"
 
 AGameManager::AGameManager()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	PrepPhaseBGMusic = CreateDefaultSubobject<UAudioComponent>(TEXT("PrepBackgroundMusic"));
+	DefensePhaseBGMusic = CreateDefaultSubobject<UAudioComponent>(TEXT("DefenseBackgroundMusic"));
 }
 
 void AGameManager::BeginPlay()
 {
 	Super::BeginPlay();
+	DefensePhaseBGMusic->Stop();
 	if (UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance()))
 	{
 		GameInstance->SetGameManager(this);
@@ -42,6 +46,13 @@ void AGameManager::StartPrepPhase()
 {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, TEXT("Starting Prep Phase"));
+	if (!PrepState)
+	{
+		DefensePhaseBGMusic->Stop();
+		PrepPhaseBGMusic->Play();
+	}
+	PrepState = true;
+	
 }
 
 void AGameManager::StartAttackPhase()
@@ -121,12 +132,6 @@ void AGameManager::RandomSort()
 	}
 }
 
-void AGameManager::CountDown(int32 start)
-{
-	TimeCount = start;
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AGameManager::CountDownTick, 1.f, true, 1.f);
-}
-
 void AGameManager::DisplayCount()
 {
 	if (GEngine)
@@ -136,6 +141,12 @@ void AGameManager::DisplayCount()
 	}
 }
 
+void AGameManager::CountDown(int32 start)
+{
+	TimeCount = start;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AGameManager::CountDownTick, 1.f, true, 1.f);
+}
+
 void AGameManager::CountDownTick()
 {
 	DisplayCount();
@@ -143,6 +154,12 @@ void AGameManager::CountDownTick()
 	if (TimeCount < 0)
 	{
 		GetWorldTimerManager().ClearTimer(TimerHandle);
+		if (PrepState)
+		{
+			PrepPhaseBGMusic->Stop();
+			DefensePhaseBGMusic->Play();
+		}
+		PrepState = false;
 		SpawnWave();
 	}
 }
