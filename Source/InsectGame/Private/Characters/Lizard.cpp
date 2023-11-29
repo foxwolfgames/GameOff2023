@@ -1,5 +1,6 @@
 //Classes File
 #include "Characters/Lizard.h"
+#include "Enemies/BaseEnemy.h"
 #include "BaseGameInstance.h"
 #include "GameManager.h"
 #include "Deployables/TowerManager.h"
@@ -106,7 +107,10 @@ void ALizard::LMB()
 {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("LMB"));
-	PlaceTower();
+	if (E_Toggle)
+		PlaceTower();
+	else
+		MeleeAttack();
 }
 
 void ALizard::LShift()
@@ -189,11 +193,48 @@ void ALizard::PreviewTower(int32 index)
 
 void ALizard::PlaceTower()
 {
-	if (bCanPlace && E_Toggle && TowerManager)
+	if (bCanPlace && TowerManager)
 	{
 		if (TowerManager)
 		{
 			TowerManager->DeployTower(0, RayHitLocation, RayHitRotation);
+		}
+	}
+}
+
+void ALizard::MeleeAttack()
+{
+	float MeleeDamage = 50.f;
+
+	FCollisionShape MeleeCollisionShape = FCollisionShape::MakeSphere(CurrentAttackRadius);
+
+	TArray<FHitResult> HitResults;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+	FVector StartTrace = GetActorLocation() + GetActorForwardVector() * CurrentAttackRadius;
+	FVector EndTrace = StartTrace + GetActorForwardVector() * MeleeCollisionShape.GetSphereRadius();
+
+	bool bHit = GetWorld()->SweepMultiByChannel(
+		HitResults,
+		StartTrace,
+		EndTrace,
+		FQuat::Identity,
+		ECC_Pawn,
+		MeleeCollisionShape,
+		CollisionParams
+	);
+	if (GetWorld())
+	{
+		FVector StartLocation = GetActorLocation();
+		DrawDebugSphere(GetWorld(), StartTrace, MeleeCollisionShape.GetSphereRadius(), 12, FColor::Green, false, 0.2f);
+	}
+	for (const FHitResult& Hit : HitResults)
+	{
+		ABaseEnemy* EnemyActor = Cast<ABaseEnemy>(Hit.GetActor());
+		if (EnemyActor)
+		{
+			EnemyActor->GetHit(Hit.ImpactPoint);
 		}
 	}
 }
@@ -219,6 +260,7 @@ void ALizard::UpdateSize(float DeltaTime)
 		GetCharacterMovement()->MaxStepHeight = FMath::Lerp(StepHeight, StepHeight * ShrinkScale, ResizeProgress);
 		SpringArm->ProbeSize = FMath::Lerp(ProbeSize, ProbeSize * ShrinkScale, ResizeProgress);
 		PlaceObjectDistance = FMath::Lerp(MaxPlaceObjectDistance, MaxPlaceObjectDistance * ShrinkScale * 2.f, ResizeProgress);
+		CurrentAttackRadius = FMath::Lerp(AttackRadius, AttackRadius * ShrinkScale, ResizeProgress);
 		if (ResizeProgress >= 1.f)
 		{
 			bIsResizing = false;
@@ -234,6 +276,7 @@ void ALizard::UpdateSize(float DeltaTime)
 		GetCharacterMovement()->MaxStepHeight = FMath::Lerp(StepHeight * ShrinkScale, StepHeight, ResizeProgress);
 		SpringArm->ProbeSize = FMath::Lerp(ProbeSize * ShrinkScale, ProbeSize, ResizeProgress);
 		PlaceObjectDistance = FMath::Lerp(MaxPlaceObjectDistance * ShrinkScale * 2.f, MaxPlaceObjectDistance, ResizeProgress);
+		CurrentAttackRadius = FMath::Lerp(AttackRadius * ShrinkScale, AttackRadius, ResizeProgress);
 		if (ResizeProgress >= 1.f)
 		{
 			bIsResizing = false;
