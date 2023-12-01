@@ -69,6 +69,8 @@ protected:
 	UInputAction* LShiftAction;
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* ESCAction;
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* ScrollAction;
 	//Functions
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
@@ -77,6 +79,7 @@ protected:
 	void LMB();
 	void LShift();
 	void ESC();
+	void MouseWheel(const FInputActionValue& Value);
 
 private:
 	//Values
@@ -85,6 +88,7 @@ private:
 	bool bIsResizing = false;
 	bool bCanPlace = false;
 	int32 PreviewTowerIndex = 0;
+	int32 MaxTowerIndex = 0;
 	float ResizeProgress = 0;
 	//Cache
 	UPROPERTY(VisibleAnywhere)

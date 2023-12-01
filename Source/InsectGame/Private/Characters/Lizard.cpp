@@ -42,7 +42,11 @@ void ALizard::BeginPlay()
 	{
 		TowerManager = GameInstance->GetTowerManager();
 		if (TowerManager)
+		{
 			UE_LOG(LogTemp, Warning, TEXT("Got TowerManager"));
+			MaxTowerIndex = TowerManager->PreviewSize - 1;
+		}
+			
 	}
 	PlayerControl = Cast<APlayerController>(GetController());
 	if (PlayerControl)
@@ -127,6 +131,21 @@ void ALizard::ESC()
 {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("ESC"));
+}
+
+void ALizard::MouseWheel(const FInputActionValue& Value)
+{
+	const int8 ScrollVal = (int8)Value.Get<float>();
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Scroll: %d"), ScrollVal));
+	int8 PreviousTowerIndex = PreviewTowerIndex;
+	PreviewTowerIndex += ScrollVal;
+	if (PreviewTowerIndex < 0)
+		PreviewTowerIndex = MaxTowerIndex;
+	else if (PreviewTowerIndex > MaxTowerIndex)
+		PreviewTowerIndex = 0;
+	TowerManager->GetTowerByIndex(PreviousTowerIndex)->SetVisibility(false);
+	TowerManager->GetTowerByIndex(PreviewTowerIndex)->SetVisibility(true);
 }
 
 void ALizard::RayTrace()
@@ -298,6 +317,7 @@ void ALizard::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(LMBAction, ETriggerEvent::Started, this, &ALizard::LMB);
 		EnhancedInputComponent->BindAction(LShiftAction, ETriggerEvent::Started, this, &ALizard::LShift);
 		EnhancedInputComponent->BindAction(ESCAction, ETriggerEvent::Started, this, &ALizard::ESC);
+		EnhancedInputComponent->BindAction(ScrollAction, ETriggerEvent::Started, this, &ALizard::MouseWheel);
 	}
 }
 

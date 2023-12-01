@@ -25,13 +25,14 @@ public:
 	ATower* GetTowerByIndex(int32 index);
 	UFUNCTION()
 	void DeployTower(int32 index, FVector Location, FRotator Rotation);
+	UPROPERTY()
+	int32 PreviewSize;
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
 	//bool hidden;
-	int32 PreviewSize;
 	//Cache
 	UPROPERTY()
 	ATowerFactory* TowerFactory;
