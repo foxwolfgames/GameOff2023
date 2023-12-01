@@ -40,6 +40,7 @@ void ALizard::BeginPlay()
 	GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 	if (GameInstance)
 	{
+		GameInstance->SetPlayerCharacter(this);
 		TowerManager = GameInstance->GetTowerManager();
 		if (TowerManager)
 		{
