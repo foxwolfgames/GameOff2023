@@ -15,6 +15,7 @@ ATower::ATower()
 
 	CollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollisionCapsule"));
 	CollisionCapsule->SetupAttachment(GetRootComponent());
+	//Set FloorTrace channel to block
 
 	AttackRange = 1000.f;
 	AttackDamage = 10.f;
