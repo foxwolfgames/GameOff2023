@@ -150,11 +150,11 @@ void ALizard::RayTrace()
 	AActor* HitActor = HitResult.GetActor();
 	if (GEngine)
 	{
-		FColor DebugColor = bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > PlaceObjectDistance) && HitActor->ActorHasTag("Placable") ? FColor::Green : FColor::Red;
+		FColor DebugColor = bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > PlaceObjectDistance) && HitActor->ActorHasTag("Placeable") && FMath::Abs(HitResult.ImpactNormal.Z) >= .9f ? FColor::Green : FColor::Red;
 		DrawDebugLine(GetWorld(), CameraLocation, TraceEnd, DebugColor, false, -1, 0, 1.0f);
 	}
 
-	if (bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > PlaceObjectDistance) && HitActor->ActorHasTag("Placable"))
+	if (bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > PlaceObjectDistance) && HitActor->ActorHasTag("Placeable") && FMath::Abs(HitResult.ImpactNormal.Z) >= .9f)
 	{
 		//Note: initialize RayHitLocation when beginning raytrace, currently 0,0,0
 		RayHitLocation = HitResult.ImpactPoint;
