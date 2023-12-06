@@ -40,9 +40,14 @@ void ALizard::BeginPlay()
 	GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 	if (GameInstance)
 	{
+		GameInstance->SetPlayerCharacter(this);
 		TowerManager = GameInstance->GetTowerManager();
 		if (TowerManager)
+		{
 			UE_LOG(LogTemp, Warning, TEXT("Got TowerManager"));
+			MaxTowerIndex = TowerManager->PreviewSize - 1;
+		}
+			
 	}
 	PlayerControl = Cast<APlayerController>(GetController());
 	if (PlayerControl)
@@ -129,6 +134,21 @@ void ALizard::ESC()
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("ESC"));
 }
 
+void ALizard::MouseWheel(const FInputActionValue& Value)
+{
+	const int8 ScrollVal = (int8)Value.Get<float>();
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Scroll: %d"), ScrollVal));
+	int8 PreviousTowerIndex = PreviewTowerIndex;
+	PreviewTowerIndex += ScrollVal;
+	if (PreviewTowerIndex < 0)
+		PreviewTowerIndex = MaxTowerIndex;
+	else if (PreviewTowerIndex > MaxTowerIndex)
+		PreviewTowerIndex = 0;
+	TowerManager->GetTowerByIndex(PreviousTowerIndex)->SetVisibility(false);
+	TowerManager->GetTowerByIndex(PreviewTowerIndex)->SetVisibility(true);
+}
+
 void ALizard::RayTrace()
 {
 	if (!ViewCamera)
@@ -150,11 +170,11 @@ void ALizard::RayTrace()
 	AActor* HitActor = HitResult.GetActor();
 	if (GEngine)
 	{
-		FColor DebugColor = bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > PlaceObjectDistance) && HitActor->ActorHasTag("Placable") ? FColor::Green : FColor::Red;
+		FColor DebugColor = bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > PlaceObjectDistance) && HitActor->ActorHasTag("Placeable") && FMath::Abs(HitResult.ImpactNormal.Z) >= .9f ? FColor::Green : FColor::Red;
 		DrawDebugLine(GetWorld(), CameraLocation, TraceEnd, DebugColor, false, -1, 0, 1.0f);
 	}
 
-	if (bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > PlaceObjectDistance) && HitActor->ActorHasTag("Placable"))
+	if (bHit && (FVector::Dist(HitResult.ImpactPoint, GetActorLocation()) > PlaceObjectDistance) && HitActor->ActorHasTag("Placeable") && FMath::Abs(HitResult.ImpactNormal.Z) >= .9f)
 	{
 		//Note: initialize RayHitLocation when beginning raytrace, currently 0,0,0
 		RayHitLocation = HitResult.ImpactPoint;
@@ -298,6 +318,7 @@ void ALizard::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(LMBAction, ETriggerEvent::Started, this, &ALizard::LMB);
 		EnhancedInputComponent->BindAction(LShiftAction, ETriggerEvent::Started, this, &ALizard::LShift);
 		EnhancedInputComponent->BindAction(ESCAction, ETriggerEvent::Started, this, &ALizard::ESC);
+		EnhancedInputComponent->BindAction(ScrollAction, ETriggerEvent::Started, this, &ALizard::MouseWheel);
 	}
 }
 

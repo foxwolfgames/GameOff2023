@@ -10,6 +10,8 @@
 
 class AAIController;
 class ANavigationManager;
+class ALizard;
+class AGenerator;
 
 UCLASS()
 class INSECTGAME_API ABaseEnemy : public ACharacter, public IHitInterface
@@ -30,15 +32,22 @@ private:
 	//Cache
 	UPROPERTY(EditAnywhere);
 	AAIController* AIController;
+	//UPROPERTY(EditAnywhere);
+	//ALizard* Player;
+	UPROPERTY(EditAnywhere)
+	AGenerator* Generator;
 	UPROPERTY(VisibleAnywhere)
 	ANavigationManager* NavigationManager;
 	UPROPERTY()
 	TArray<AActor*> CurrentLane;
 	int8 CurrentLaneIndex = 1;
 	float PatrolRadius = 200.f;
+	float MeleeCooldown = 0;
 	UPROPERTY()
 	AActor* CurrentTarget;/**/
 	//Functions
 	UFUNCTION()
 	bool InTargetRange(AActor* Target, double Radius);
+	UFUNCTION()
+	void MeleeAttack();
 };

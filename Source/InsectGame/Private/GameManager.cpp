@@ -23,11 +23,11 @@ void AGameManager::BeginPlay()
 	{
 		GameInstance->SetGameManager(this);
 		NavigationManager = GameInstance->GetNavigationManager();
-		if (GEngine && NavigationManager)
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, TEXT("NavigationManager set"));
+		//if (GEngine && NavigationManager)
+		//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, TEXT("NavigationManager set"));
 		EnemyManager = GameInstance->GetEnemyManager();
-		if (GEngine && EnemyManager)
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, TEXT("EnemyManager set"));
+		//if (GEngine && EnemyManager)
+		//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, TEXT("EnemyManager set"));
 	}
 	CurrentWave = 0;
 	CurrentEnemy = 0;
@@ -52,7 +52,6 @@ void AGameManager::StartPrepPhase()
 		PrepPhaseBGMusic->Play();
 	}
 	PrepState = true;
-	
 }
 
 void AGameManager::StartAttackPhase()
@@ -62,6 +61,11 @@ void AGameManager::StartAttackPhase()
 	LockStartWave = true;
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, TEXT("Starting Attack Phase"));
+	if (UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance()))
+	{
+		NavigationManager = GameInstance->GetNavigationManager();
+		EnemyManager = GameInstance->GetEnemyManager();
+	}
 	CountDown(3);
 }
 
@@ -76,6 +80,10 @@ void AGameManager::SpawnWave()
 
 void AGameManager::SpawnEnemy()
 {
+	if (EnemyManager)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("EnemyManager"));
+	if (NavigationManager)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("NavigationManager"));
 	if (EnemyManager && NavigationManager)
 	{
 		//if (GEngine)

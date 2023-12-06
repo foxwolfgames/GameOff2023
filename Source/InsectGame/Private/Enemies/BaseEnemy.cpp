@@ -3,6 +3,8 @@
 
 #include "Enemies/BaseEnemy.h"
 #include "BaseGameInstance.h"
+#include "Characters/Lizard.h"
+#include "Deployables/Generator.h"
 #include "Enemies/NavigationManager.h"
 //Components
 #include "Components/SkeletalMeshComponent.h"
@@ -38,6 +40,7 @@ void ABaseEnemy::BeginPlay()
 	if (UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance()))
 	{
 		NavigationManager = GameInstance->GetNavigationManager();
+		Generator = GameInstance->GetGenerator();
 	}/*
 	if (NavigationManager)
 	{
@@ -53,6 +56,46 @@ bool ABaseEnemy::InTargetRange(AActor* Target, double Radius)
 	return DistanceToTarget <= Radius;
 }
 
+void ABaseEnemy::MeleeAttack()
+{
+	MeleeCooldown = 1.f;
+	float MeleeDamage = 50.f;
+
+	FCollisionShape MeleeCollisionShape = FCollisionShape::MakeSphere(50.f);
+
+	TArray<FHitResult> HitResults;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+	FVector StartTrace = GetActorLocation() + GetActorForwardVector() * 50.f;
+	FVector EndTrace = StartTrace + GetActorForwardVector() * MeleeCollisionShape.GetSphereRadius();
+
+	bool bHit = GetWorld()->SweepMultiByChannel(
+		HitResults,
+		StartTrace,
+		EndTrace,
+		FQuat::Identity,
+		ECC_Pawn,
+		MeleeCollisionShape,
+		CollisionParams
+	);
+	if (GetWorld())
+	{
+		FVector StartLocation = GetActorLocation();
+		DrawDebugSphere(GetWorld(), StartTrace, MeleeCollisionShape.GetSphereRadius(), 12, FColor::Green, false, 0.1f);
+	}
+	for (const FHitResult& Hit : HitResults)
+	{
+		AGenerator* Gen = Cast<AGenerator>(Hit.GetActor());
+		if (Gen)
+		{
+			if (GEngine)
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Hit Gen"));
+			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 25.f, 12, FColor::Red, false, 0.1f);
+		}
+	}
+}
+
 // Called every frame
 void ABaseEnemy::Tick(float DeltaTime)
 {
@@ -64,6 +107,14 @@ void ABaseEnemy::Tick(float DeltaTime)
 	}
 	if (CurrentTarget && AIController)
 	{
+		if(Generator)
+			if (InTargetRange(Generator, 600.f))
+			{
+				if (MeleeCooldown <= 0)
+					MeleeAttack();
+				else
+					MeleeCooldown -= DeltaTime;
+			}
 		if (InTargetRange(CurrentTarget, 150.f) && (CurrentLaneIndex < CurrentLane.Num()))
 		{
 			CurrentTarget = CurrentLane[CurrentLaneIndex++];
