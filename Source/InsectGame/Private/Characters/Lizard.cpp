@@ -115,7 +115,7 @@ void ALizard::LMB()
 	if (E_Toggle)
 		PlaceTower();
 	else
-		MeleeAttack();
+		if(!bIsAttacking) MeleeAttack();
 }
 
 void ALizard::LShift()
@@ -224,6 +224,12 @@ void ALizard::PlaceTower()
 
 void ALizard::MeleeAttack()
 {
+	bIsAttacking = true;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &ALizard::AttackHit, .6f, false);
+}
+
+void ALizard::AttackHit()
+{
 	float MeleeDamage = 50.f;
 
 	FCollisionShape MeleeCollisionShape = FCollisionShape::MakeSphere(CurrentAttackRadius);
@@ -257,6 +263,12 @@ void ALizard::MeleeAttack()
 			EnemyActor->GetHit(Hit.ImpactPoint);
 		}
 	}
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &ALizard::EndAttack, .2f, false);
+}
+
+void ALizard::EndAttack()
+{
+	bIsAttacking = false;
 }
 
 void ALizard::Tick(float DeltaTime)

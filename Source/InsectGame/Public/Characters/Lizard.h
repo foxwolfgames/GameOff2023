@@ -48,6 +48,7 @@ public:
 	float AttackRadius = 100.f;
 	UPROPERTY(EditAnywhere)
 	float CurrentAttackRadius = 100.f;
+	bool bIsAttacking = false;
 
 protected:
 	virtual void BeginPlay() override;
@@ -80,6 +81,12 @@ protected:
 	void LShift();
 	void ESC();
 	void MouseWheel(const FInputActionValue& Value);
+	UFUNCTION()
+	void AttackHit();
+	UFUNCTION()
+	void EndAttack();
+	UPROPERTY()
+	FTimerHandle TimerHandle;
 
 private:
 	//Values
